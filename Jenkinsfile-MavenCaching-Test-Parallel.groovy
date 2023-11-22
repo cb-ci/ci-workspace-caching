@@ -1,4 +1,4 @@
-def gitMavenrepo = "https://github.com/org-folderscan-example/spring-boot-demo.git"
+def gitMavenRepo = "https://github.com/org-folderscan-example/spring-boot-demo.git"
 def s3CacheDir = "maven-cache"
 def pvcMountCacheDir = "/tmp/cache/.m2"
 def k8sYaml = """
@@ -35,7 +35,7 @@ pipeline {
                     stages {
                         stage("clone") {
                             steps {
-                                git gitMavenrepo
+                                git gitMavenRepo
                             }
                         }
                         stage("build") {
@@ -64,7 +64,7 @@ pipeline {
                     stages {
                         stage("clone") {
                             steps {
-                                git gitMavenrepo
+                                git gitMavenRepo
                             }
                         }
                         stage("build") {
@@ -89,7 +89,7 @@ pipeline {
                     stages {
                         stage("clone") {
                             steps {
-                                git gitMavenrepo
+                                git gitMavenRepo
                             }
                         }
                         stage("build") {
