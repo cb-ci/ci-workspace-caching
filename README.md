@@ -11,7 +11,6 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
     This volume type is risky and can expose the host to attacks from compromised containers; it should only be used in very specific cases.
   * see `create-maven-cache-pvc.yaml`
   * https://github.com/jenkinsci/kubernetes-plugin/blob/master/examples/maven-with-cache.groovy
-  * https://codeinfocus.com/blog/2020-04/building-maven-projects-in-jenkins-docker-workers/ 
 
 ## Background details
 
