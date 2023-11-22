@@ -195,17 +195,19 @@ This means each job could get its own isolated Maven repository just for itself.
 
 When using this option, consider setting up a Maven artifact manager so that you don't have to hit remote Maven repositories too often.
 
-### Test on concurrency
+### Test on race conditions for shared cache volumes
 
 There is a test pipeline `Jenkinsfile-MavenCaching-Volume-Concurrent-Test.groovy` in this repo that runs many parallel builds from within the same pof pointing to the same local cache volume.
 In the test I made I was just able to break some of those builds when one thread delete the shared local repo while another thread tries to read a dependency from it
 
-````
+```
 ERROR] Internal error: java.io.UncheckedIOException: java.io.FileNotFoundException: /tmp/cache/.m2/com/datastax/oss/java-driver-bom/4.10.0/java-driver-bom-4.10.0.pom.lastUpdated (No such file or directory) -> [Help 1]
 org.apache.maven.InternalErrorException: Internal error: java.io.UncheckedIOException: java.io.FileNotFoundException: /tmp/cache/.m2/com/datastax/oss/java-driver-bom/4.10.0/java-driver-bom-4.10.0.pom.lastUpdated (No such file or directory)
     at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:109)
     at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
 ```
+
+TODO: I need better test scenarios for concurrency  
 
 
 
