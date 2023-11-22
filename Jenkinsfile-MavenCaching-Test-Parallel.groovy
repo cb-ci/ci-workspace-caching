@@ -79,7 +79,7 @@ pipeline {
                         }
                     }
                 }
-                stage("maven-pv-mount-cache") {
+                stage("maven-pvc-mount-cache") {
                     agent {
                         kubernetes {
                             yaml k8sYaml
