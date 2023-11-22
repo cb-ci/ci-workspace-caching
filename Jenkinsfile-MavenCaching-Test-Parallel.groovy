@@ -46,7 +46,6 @@ pipeline {
                                     """
                                 readCache name: s3CacheDir
                                 sh "mvn clean install -Dmaven.repo.local=./${s3CacheDir} -DskipTests"
-                                echo s3CacheDir
                                 //archive to S3
                                 //archiveArtifacts "target/*.war"
                                 writeCache name: s3CacheDir, includes: "${s3CacheDir}/**", excludes: "**SNAPSHOT**"
