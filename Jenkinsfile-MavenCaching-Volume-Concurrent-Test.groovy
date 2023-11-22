@@ -20,7 +20,7 @@ def k8sYaml ="""
             claimName: maven-repo
     """
 pipeline {
-   agent none
+    agent none
     stages {
         stage ("clean") {
             agent {
@@ -45,8 +45,8 @@ pipeline {
                 axes {
                     axis {
                         name 'build'
-                        //values "build1","build2","build3","build4","build5","build6"
-                        values "build1","build2"
+                        //values "build-1","build-2","build-3","build-4","build-5","build-6"
+                        values "build-1","build-2"
                     }
                     axis {
                         name 'localrepo'
@@ -61,6 +61,8 @@ pipeline {
                     }
                     stage('build') {
                         steps {
+                            //This will break the builds
+                            //sh "rm -Rfv ${pvcMountCacheDir}/*"
                             sh "mvn install -Dmaven.repo.local=${pvcMountCacheDir}"
                         }
                     }
