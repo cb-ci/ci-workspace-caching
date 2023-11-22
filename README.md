@@ -146,6 +146,7 @@ resumeBlocked: false
 ## Costs 
 
 * S3 is not as expensive rather using EFS
+  * https://aws.amazon.com/s3/pricing/
 * The price of PV caching depends on the concrete storage (EFS), however, the assumption is that S3 is the most cost-efficient approach
 * The maven default repository will download dependencies for each build again from the remote repository.
   * https://www.jenkins.io/blog/2023/09/06/artifactory-bandwidth-reduction/
