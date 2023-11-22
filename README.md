@@ -1,6 +1,6 @@
 # Maven Caching Options for CI when using PodTemplates
 
-This repo contains `Jenkinsfile-S3CacheCompareInParallel.groovy` Pipeline  which shows 3 different ways of dealing with the Maven local repository cache
+This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  which shows 3 different ways of dealing with the Maven local repository cache
 
 * Using AWS S3 bucket
 * Using the Maven default setting
@@ -23,7 +23,7 @@ This repo contains `Jenkinsfile-S3CacheCompareInParallel.groovy` Pipeline  which
 For all the maven cache testing scenarios we will need: 
 
 * A CloudBees CI installation on AWS EKS
-* A CI Controller where our `Jenkinsfile-S3CacheCompareInParallel.groovy` Pipeline runs
+* A CI Controller where our `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline runs
 * A S3 Bucket 
 * A IAM user with S3 policies attached 
 * A configuration of  [Workspace caching in CloudBees CI](https://www.cloudbees.com/capabilities/continuous-integration/workspace-caching) on teh Controller
@@ -92,8 +92,10 @@ For the shared cache volume test we need an shared volume where Maven can store 
 
 # Run the test Pipeline
 
-* Create a Jenkins Pipeline Job
-* 
+* Create a Jenkins Pipeline Job with `Jenkinsfile-MavenCaching-Test-Parallel.groovy`
+* Run it and explore time consumption for each build stage using the [Pipeline Explorer](https://docs.cloudbees.com/docs/cloudbees-ci/latest/pipelines/cloudbees-pipeline-explorer-plugin)
+
+![Pipeine explorer](images/pipeline-explorer.png?raw=true "PipelineExplorer")
 
 
 
