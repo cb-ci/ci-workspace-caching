@@ -11,6 +11,8 @@ def k8sYaml ="""
         - sleep
         args:
         - infinity
+#        securityContext:
+#          runAsUser: 1000
         volumeMounts:
           - name: maven-cache
             mountPath: ${pvcMountCacheDir}
@@ -20,15 +22,14 @@ def k8sYaml ="""
             claimName: maven-repo
     """
 pipeline {
-    agent none
+    agent {
+        kubernetes {
+            yaml k8sYaml
+            defaultContainer 'maven'
+        }
+    }
     stages {
         stage ("clean") {
-            agent {
-                kubernetes {
-                    yaml k8sYaml
-                    defaultContainer 'maven'
-                }
-            }
             steps{
                 //Clean the cache so we can see concurrent access when it gets refilled
                 sh "rm -Rfv ${pvcMountCacheDir}/*"
@@ -36,12 +37,6 @@ pipeline {
         }
         stage('BuildAndTest') {
             matrix {
-                agent {
-                    kubernetes {
-                        yaml k8sYaml
-                        defaultContainer 'maven'
-                    }
-                }
                 axes {
                     axis {
                         name 'build'
@@ -54,28 +49,21 @@ pipeline {
                     }
                 }
                 stages {
-                    stage('clone') {
-                        steps {
-                            git gitMavenRepo
-                        }
-                    }
                     stage('build') {
                         steps {
-                            //This will break the builds
-                            //sh "rm -Rfv ${pvcMountCacheDir}/*"
-                            sh "mvn install -Dmaven.repo.local=${pvcMountCacheDir}"
+                            dir ("${build}_${localRepo}") {
+                                git gitMavenRepo
+                                //This will break the builds
+                                //sh "rm -Rfv ${pvcMountCacheDir}/*"
+                                sh "mvn install -Dmaven.repo.local=${pvcMountCacheDir}"
+                            }
+
                         }
                     }
                 }
             }
         }
         stage ("show-cache"){
-            agent {
-                kubernetes {
-                    yaml k8sYaml
-                    defaultContainer 'maven'
-                }
-            }
             steps {
                 sh "ls -ltRa ${pvcMountCacheDir}/de"
             }
