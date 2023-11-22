@@ -18,6 +18,7 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
 * https://www.cloudbees.com/capabilities/continuous-integration/workspace-caching
 * https://www.cloudbees.com/videos/speeding-up-jenkins-and-maven-build-cache
 * https://www.youtube.com/watch?v=u6LF-T-daS4
+* https://www.jenkins.io/blog/2023/09/06/artifactory-bandwidth-reduction/
 * https://gist.github.com/darinpope/443f1d54b09b914fbeb59e5a12bf6dc1 
 * https://webmasters.stackexchange.com/questions/110310/avoiding-ssl-certificate-errors-with-amazon-s3-subdomain
 * https://sneha-wadhwa.medium.com/speeding-up-ci-pipelines-on-jenkins-63efff817d1d
@@ -144,6 +145,7 @@ resumeBlocked: false
 * S3 is not as expensive rather using EFS
 * The price of PV caching depends on the concrete storage (EFS), however, the assumption is that S3 is the most cost-efficient approach
 * The maven default repository will download dependencies for each build again from the remote repository.
+  * https://www.jenkins.io/blog/2023/09/06/artifactory-bandwidth-reduction/
   * https://aws.amazon.com/ec2/pricing/on-demand/
 
 As of my last knowledge, AWS does not charge specifically for downloading Maven dependencies or any other external internet data into a CI pod within Amazon EKS (Elastic Kubernetes Service).
