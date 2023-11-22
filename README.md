@@ -2,10 +2,14 @@
 
 This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  which shows 3 different ways of dealing with the Maven local repository cache
 
-* Using AWS S3 bucket
-* Using the Maven default setting
-* Using a shared cache volume (PV with hostpath!)
-
+* Using AWS S3 bucket cache 
+  * https://docs.cloudbees.com/docs/cloudbees-ci/latest/pipelines/cloudbees-cache-step#_writecache_step
+* Using the Maven default local repository 
+  * ~.m2, see https://maven.apache.org/guides/introduction/introduction-to-repositories.html#:~:text=A%20repository%20in%20Maven%20holds,you%20have%20not%20yet%20released
+* Using a shared cache volume 
+  * shared cache PVC (hostpath, see notes below!!)
+    * https://github.com/jenkinsci/kubernetes-plugin/blob/master/examples/maven-with-cache.groovy
+    * https://codeinfocus.com/blog/2020-04/building-maven-projects-in-jenkins-docker-workers/ 
 
 ## Background details
 
@@ -17,6 +21,7 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
 * https://gist.github.com/darinpope/443f1d54b09b914fbeb59e5a12bf6dc1 
 * https://webmasters.stackexchange.com/questions/110310/avoiding-ssl-certificate-errors-with-amazon-s3-subdomain
 * https://sneha-wadhwa.medium.com/speeding-up-ci-pipelines-on-jenkins-63efff817d1d
+* https://codeinfocus.com/blog/2020-04/building-maven-projects-in-jenkins-docker-workers/
 
 # Pre-requirements
 
