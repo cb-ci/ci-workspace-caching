@@ -142,6 +142,7 @@ resumeBlocked: false
 * It is ~50% faster rather than S3 or Maven default caching
 * It has not been tested with Artifactory or Nexus, the default caching in this test uses public Maven repos
 * It has not been tested with EFS volumes, it uses "hostpath" volumes in this test
+* The test needs to be done also with a maven pom referencing more (bigger) dependencies.
 
 ## Costs 
 
