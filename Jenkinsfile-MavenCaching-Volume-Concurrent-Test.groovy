@@ -32,6 +32,7 @@ pipeline {
         stage ("clean") {
             steps{
                 //Clean the cache so we can see concurrent access when it gets refilled
+                echo "clean before"
                 sh "rm -Rfv ${pvcMountCacheDir}/*"
             }
         }
@@ -53,11 +54,10 @@ pipeline {
                         steps {
                             dir ("${build}_${localRepo}") {
                                 git gitMavenRepo
-                                //This will break the builds
+                                //This might break the builds in other threads
                                 //sh "rm -Rfv ${pvcMountCacheDir}/*"
                                 sh "mvn install -Dmaven.repo.local=${pvcMountCacheDir}"
                             }
-
                         }
                     }
                 }
