@@ -92,8 +92,11 @@ For the shared cache volume test we need an shared volume where Maven can store 
 
 > kubectl apply -f create-maven-cache-pvc.yml 
 
-* NOTE: For testing purpose the PV uses a [hostpathvolume](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath)
-* In production you should better use EFS! (ReadWriteMany) 
+NOTE: For testing purpose the PV uses a [hostpathvolume](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath)
+In production you should better use EFS! (ReadWriteMany) 
+
+This mounts a named directory from the host into the container. Any change made by the container persists until the host is terminated. 
+This volume type is risky and can expose the host to attacks from compromised containers; it should only be used in very specific cases.
 
 # Run the test Pipeline
 
@@ -139,7 +142,13 @@ resumeBlocked: false
 ## Costs 
 
 * S3 is not as expensive rather using EFS
-* The price of PV caching depends on the concrete storage
+* The price of PV caching depends on the concrete storage (EFS), however, the assumption is that S3 is the most cost-efficient approach
+* The maven default repository will download dependencies for each build again from the remote repository.
+  * https://aws.amazon.com/ec2/pricing/on-demand/
+
+As of my last knowledge, AWS does not charge specifically for downloading Maven dependencies or any other external internet data into a CI pod within Amazon EKS (Elastic Kubernetes Service).
+The costs associated with using EKS are primarily related to the underlying infrastructure (such as EC2 instances, EBS volumes, load balancers), EKS control plane costs, data transfer costs (if applicable), and any additional services or resources utilized within the AWS ecosystem.
+Data transfer costs might apply if the CI pod is transferring data outside of the AWS region, across different AWS services, or outside of AWS altogether. However, downloading Maven dependencies from the internet into a CI pod within EKS is not directly charged by AWS.
 
 
 
