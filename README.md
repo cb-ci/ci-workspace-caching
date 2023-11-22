@@ -4,7 +4,7 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
 
 * Using AWS S3 bucket
 * Using the Maven default setting
-* Using a shared volume 
+* Using a shared cache volume (PV with hostpath!)
 
 
 ## Background details
@@ -23,10 +23,10 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
 For all the maven cache testing scenarios we will need: 
 
 * A CloudBees CI installation on AWS EKS
-* A CI Controller where our `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline runs
+* A CI Controller where the `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline runs
 * A S3 Bucket 
 * A IAM user with S3 policies attached 
-* A configuration of  [Workspace caching in CloudBees CI](https://www.cloudbees.com/capabilities/continuous-integration/workspace-caching) on teh Controller
+* A configuration of [Workspace caching in CloudBees CI](https://www.cloudbees.com/capabilities/continuous-integration/workspace-caching) on teh Controller
 * A Maven cache PVC,PV 
 
 # S3 Bucket
