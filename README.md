@@ -9,6 +9,7 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
 * Using a shared cache volume 
   * Hostpath as used in this test mounts a named directory from the host into the container. Any change made by the container persists until the host is terminated.
     This volume type is risky and can expose the host to attacks from compromised containers; it should only be used in very specific cases.
+  * see `create-maven-cache-pvc.yaml`
   * https://github.com/jenkinsci/kubernetes-plugin/blob/master/examples/maven-with-cache.groovy
   * https://codeinfocus.com/blog/2020-04/building-maven-projects-in-jenkins-docker-workers/ 
 
@@ -34,7 +35,7 @@ For all the maven cache testing scenarios we will need:
 * [S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html)
 * IAM user with the S3 policies attached (see below)
 * A configuration of [Workspace caching in CloudBees CI](https://www.cloudbees.com/capabilities/continuous-integration/workspace-caching) on the CI Controller
-* A Maven cache PVC,PV see `create-maven-cache-pvc.yml` in this repo
+* A Maven cache PVC,PV see `create-maven-cache-pvc.yaml` in this repo
 
 # S3 Bucket
 
@@ -92,7 +93,7 @@ For the S3 maven caching we need to set up the workspace caching on a CI Control
 
 For the shared cache volume test we need an shared volume where Maven can store and share the local repository across builds and pods
 
-> kubectl apply -f create-maven-cache-pvc.yml 
+> kubectl apply -f create-maven-cache-pvc.yaml 
 
 NOTE: For testing purpose the PV uses a [hostpathvolume](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath)
 In production you should better use EFS! (ReadWriteMany) 
