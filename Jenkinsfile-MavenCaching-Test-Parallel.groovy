@@ -25,7 +25,7 @@ pipeline {
     stages {
         stage("Test-maven-caches") {
             parallel {
-                stage("maven-S3-Cache") {
+                stage("maven-S3-cache") {
                     agent {
                         kubernetes {
                             yaml k8sYaml
