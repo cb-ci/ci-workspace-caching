@@ -25,6 +25,7 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
 * https://webmasters.stackexchange.com/questions/110310/avoiding-ssl-certificate-errors-with-amazon-s3-subdomain
 * https://sneha-wadhwa.medium.com/speeding-up-ci-pipelines-on-jenkins-63efff817d1d
 * https://codeinfocus.com/blog/2020-04/building-maven-projects-in-jenkins-docker-workers/
+* https://blog.hiya.com/kubernetes-base-jenkins-stateful-agents/
 
 # Pre-requirements
 
