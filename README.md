@@ -93,9 +93,50 @@ For the shared cache volume test we need an shared volume where Maven can store 
 # Run the test Pipeline
 
 * Create a Jenkins Pipeline Job with `Jenkinsfile-MavenCaching-Test-Parallel.groovy`
-* Run it and explore time consumption for each build stage using the [Pipeline Explorer](https://docs.cloudbees.com/docs/cloudbees-ci/latest/pipelines/cloudbees-pipeline-explorer-plugin)
+
+The CasC item looks like this
+```
+kind: pipeline
+name: MavenCacheParallelCompare
+concurrentBuild: true
+definition:
+  cpsScmFlowDefinition:
+    scriptPath: Jenkinsfile-MavenCaching-Test-Parallel.groovy
+    scm:
+      scmGit:
+        userRemoteConfigs:
+        - userRemoteConfig:
+            url: https://github.com/cb-ci/ci-workspace-caching.git
+        branches:
+        - branchSpec:
+            name: '*/main'
+    lightweight: true
+description: ''
+disabled: false
+displayName: MavenCacheParallelCompare
+resumeBlocked: false
+```
+
+* Run the Pipeline and explore time consumption for each build stage using the [Pipeline Explorer](https://docs.cloudbees.com/docs/cloudbees-ci/latest/pipelines/cloudbees-pipeline-explorer-plugin)
 
 ![Pipeine explorer](images/pipeline-explorer.png?raw=true "PipelineExplorer")
+
+
+# Conclusion
+
+## Time consumption
+
+* A Maven cache on a shared volume seems to be the fastest approach.
+* It is ~50% faster rather than S3 or Maven default caching
+* It has not been tested with Artifactory or Nexus, the default caching in this test uses public Maven repos
+* It has not been tested with EFS volumes, it uses "hostpath" volumes in this test
+
+## Costs 
+
+* S3 is not as expensive rather using EFS
+* The price of PV caching depends on the concrete storage
+
+
 
 
 
