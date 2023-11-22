@@ -162,7 +162,38 @@ As of my last knowledge, AWS does not charge specifically for downloading Maven 
 The costs associated with using EKS are primarily related to the underlying infrastructure (such as EC2 instances, EBS volumes, load balancers), EKS control plane costs, data transfer costs (if applicable), and any additional services or resources utilized within the AWS ecosystem.
 Data transfer costs might apply if the CI pod is transferring data outside of the AWS region, across different AWS services, or outside of AWS altogether. However, downloading Maven dependencies from the internet into a CI pod within EKS is not directly charged by AWS.
 
+## Volume share for Local repositories are not thread-safe!
 
+See 
+
+* https://issues.apache.org/jira/browse/MNG-2802 
+* https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/ 
+
+Maven's local repository, by design, is not intended for simultaneous access by multiple Maven builds or processes. It's primarily meant to serve as a cache for artifacts retrieved from remote repositories to speed up subsequent builds on the same machine.
+The local repository is typically located at <user_home>/.m2/repository by default on most systems. Maven assumes it will be used by a single process at a time, and it does not enforce any built-in mechanisms for concurrent access or locking to prevent conflicts when multiple Maven builds attempt to read from or write to the repository simultaneously.
+If multiple Maven builds or processes attempt to access the same local repository concurrently, there's a risk of encountering conflicts, file corruption, or inconsistencies within the repository. This behavior might lead to unexpected build failures, incomplete artifact downloads, or repository corruption due to simultaneous write operations.
+To mitigate potential issues with concurrent access:
+* Avoid concurrent access: Try to prevent simultaneous Maven builds from accessing the same local repository to minimize the risk of conflicts and corruption.
+* Use separate local repositories: If multiple builds need to run concurrently or if you're working in a team environment where concurrent builds are common, consider configuring different local repositories for each build or user.
+* Leverage remote repositories: Rely more on remote repositories (such as Maven Central, private Nexus, or Artifactory repositories) to avoid clashes in the local repository caused by simultaneous accesses.
+* Consider build isolation: If using CI/CD tools, ensure that each build runs in its isolated environment where it manages its dependencies separately.
+
+
+From https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/
+
+To prevent race conditions on the shared local cache volume: 
+
+*mavenLocalRepo* : String (optional)
+Specify a custom local repository path. Shell-like environment variable expansions work with this field, by using the ${VARIABLE} syntax. Normally, Jenkins uses the local Maven repository as determined by Maven, by default ~/.m2/repository and can be overridden by <localRepository> in ~/.m2/settings.xml (see Configuring your Local Repository))
+This normally means that all the jobs that are executed on the same node shares a single Maven repository. The upside of this is that you can save the disk space, the downside is that the repository is not multi process safe and having multiple builds run concurrently can corrupt it. Additionally builds could interfere with each other by sharing incorrect or partially built artifacts. For example, you might end up having builds incorrectly succeed, just because your have all the dependencies in your local repository, despite that fact that none of the repositories in POM might have them.
+
+By using this option, Jenkins will tell Maven to use a custom path for the build as the local Maven repository by using -Dmaven.repo.local
+If specified as a relative path then this value well be resolved against the workspace root and not the current working directory.
+ie. if .repository is specified then $WORKSPACE/.repository will be used.
+
+This means each job could get its own isolated Maven repository just for itself. It fixes the above problems, at the expense of additional disk space consumption.
+
+When using this option, consider setting up a Maven artifact manager so that you don't have to hit remote Maven repositories too often.
 
 
 
