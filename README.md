@@ -14,17 +14,23 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
 
 ## Background details
 
-* https://github.com/jenkinsci/artifact-manager-s3-plugin#aws-credentials
-* https://docs.cloudbees.com/docs/cloudbees-ci/latest/pipelines/cloudbees-cache-step
-* https://www.cloudbees.com/capabilities/continuous-integration/workspace-caching
-* https://www.cloudbees.com/videos/speeding-up-jenkins-and-maven-build-cache
-* https://www.youtube.com/watch?v=u6LF-T-daS4
-* https://www.jenkins.io/blog/2023/09/06/artifactory-bandwidth-reduction/
-* https://gist.github.com/darinpope/443f1d54b09b914fbeb59e5a12bf6dc1 
-* https://webmasters.stackexchange.com/questions/110310/avoiding-ssl-certificate-errors-with-amazon-s3-subdomain
-* https://sneha-wadhwa.medium.com/speeding-up-ci-pipelines-on-jenkins-63efff817d1d
-* https://codeinfocus.com/blog/2020-04/building-maven-projects-in-jenkins-docker-workers/
-* https://blog.hiya.com/kubernetes-base-jenkins-stateful-agents/
+* Workspace Caching:
+  * https://github.com/jenkinsci/artifact-manager-s3-plugin#aws-credentials
+  * https://docs.cloudbees.com/docs/cloudbees-ci/latest/pipelines/cloudbees-cache-step
+  * https://www.cloudbees.com/capabilities/continuous-integration/workspace-caching
+  * https://www.cloudbees.com/videos/speeding-up-jenkins-and-maven-build-cache
+  * https://www.youtube.com/watch?v=u6LF-T-daS4
+  * https://gist.github.com/darinpope/443f1d54b09b914fbeb59e5a12bf6dc1
+* Local Repo Locking:
+  * https://source.coveo.com/2023/02/28/accelerate-mvn-builds-ci/
+  * https://issues.apache.org/jira/browse/MNG-2802
+* Other:
+  * https://www.jenkins.io/blog/2023/09/06/artifactory-bandwidth-reduction/
+  * https://webmasters.stackexchange.com/questions/110310/avoiding-ssl-certificate-errors-with-amazon-s3-subdomain
+  * https://sneha-wadhwa.medium.com/speeding-up-ci-pipelines-on-jenkins-63efff817d1d
+  * https://codeinfocus.com/blog/2020-04/building-maven-projects-in-jenkins-docker-workers/
+  * https://blog.hiya.com/kubernetes-base-jenkins-stateful-agents/
+  * https://github.com/jenkinsci/kubernetes-plugin/blob/master/examples/maven-with-cache.groovy
 
 # Pre-requirements
 
