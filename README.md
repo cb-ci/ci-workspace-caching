@@ -7,9 +7,10 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
 * Using the Maven default local repository 
   * ~.m2, see https://maven.apache.org/guides/introduction/introduction-to-repositories.html#:~:text=A%20repository%20in%20Maven%20holds,you%20have%20not%20yet%20released
 * Using a shared cache volume 
-  * shared cache PVC (hostpath, see notes below!!)
-    * https://github.com/jenkinsci/kubernetes-plugin/blob/master/examples/maven-with-cache.groovy
-    * https://codeinfocus.com/blog/2020-04/building-maven-projects-in-jenkins-docker-workers/ 
+  * Hostpath as used in this test mounts a named directory from the host into the container. Any change made by the container persists until the host is terminated.
+    This volume type is risky and can expose the host to attacks from compromised containers; it should only be used in very specific cases.
+  * https://github.com/jenkinsci/kubernetes-plugin/blob/master/examples/maven-with-cache.groovy
+  * https://codeinfocus.com/blog/2020-04/building-maven-projects-in-jenkins-docker-workers/ 
 
 ## Background details
 
@@ -96,7 +97,7 @@ For the shared cache volume test we need an shared volume where Maven can store 
 NOTE: For testing purpose the PV uses a [hostpathvolume](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath)
 In production you should better use EFS! (ReadWriteMany) 
 
-This mounts a named directory from the host into the container. Any change made by the container persists until the host is terminated. 
+Hostpath as used in this test mounts a named directory from the host into the container. Any change made by the container persists until the host is terminated.
 This volume type is risky and can expose the host to attacks from compromised containers; it should only be used in very specific cases.
 
 # Run the test Pipeline
