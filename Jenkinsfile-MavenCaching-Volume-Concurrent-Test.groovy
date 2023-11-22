@@ -67,7 +67,7 @@ pipeline {
                 }
             }
         }
-        stage ("show cache"){
+        stage ("show-cache"){
             agent {
                 kubernetes {
                     yaml k8sYaml
