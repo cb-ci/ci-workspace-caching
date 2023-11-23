@@ -1,3 +1,5 @@
+
+
 # Maven Caching Options for CI when using PodTemplates
 
 This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  which shows 3 different ways of dealing with the Maven local repository cache
@@ -12,7 +14,7 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
   * see `create-maven-cache-pvc.yaml`
   * https://github.com/jenkinsci/kubernetes-plugin/blob/master/examples/maven-with-cache.groovy
 
-## Background details
+# Background details
 
 * Workspace Caching:
   * https://github.com/jenkinsci/artifact-manager-s3-plugin#aws-credentials
@@ -50,13 +52,13 @@ For the S3 maven caching we need to set up am S3 bucket
 * create [S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html)
 * Note: Don't use `.` in the bucket name, it will lead you to SSL cert errors later in the Jenkins AWS setup
 
-## IAM Account
+# IAM Account
 
 To authenticate from a CI Controller against S3 we need an IAM USer and S3 policies
 
 * create an [IAM User](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) and attach the following policy 
 
-## S3 Bucket Policy
+# S3 Bucket Policy
 
 ```
 {
@@ -88,14 +90,14 @@ To authenticate from a CI Controller against S3 we need an IAM USer and S3 polic
 }
 ```
 
-## Configure CloudBees workspace caching on the CI Controller
+# Configure CloudBees workspace caching on the CI Controller
 
 For the S3 maven caching we need to set up the workspace caching on a CI Controller
 
 * Setup [Workspace caching in CloudBees CI](https://www.cloudbees.com/capabilities/continuous-integration/workspace-caching) on the CI Controller
 * Use the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to set up a Jenkins AWS credential for the AWS S3 setup
 
-## Create a shared cache volume
+# Create a shared cache volume
 
 For the shared cache volume test we need an shared volume where Maven can store and share the local repository across builds and pods
 
@@ -178,7 +180,7 @@ To mitigate potential issues with concurrent access:
 * Leverage remote repositories: Rely more on remote repositories (such as Maven Central, private Nexus, or Artifactory repositories) to avoid clashes in the local repository caused by simultaneous accesses.
 * Consider build isolation: If using CI/CD tools, ensure that each build runs in its isolated environment where it manages its dependencies separately.
 
-### Test on race conditions for shared cache volumes
+## Test on race conditions for shared cache volumes
 
 There is another test pipeline `Jenkinsfile-MavenCaching-Volume-Concurrent-Test.groovy` in this repo that runs many parallel builds from within the same pof pointing to the same local cache volume.
 In the test I made I was just able to break some of those builds when one thread delete the shared local repo while another thread tries to read a dependency from it
