@@ -192,7 +192,7 @@ org.apache.maven.InternalErrorException: Internal error: java.io.UncheckedIOExce
 
 TODO: I need better test scenarios for concurrency
 
-## From [Pipeline Maven Integration Plugin](https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/(
+## From [Pipeline Maven Integration Plugin](https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/)
 
 To prevent race conditions on the shared local cache volume:
 
