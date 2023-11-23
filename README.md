@@ -178,12 +178,27 @@ To mitigate potential issues with concurrent access:
 * Leverage remote repositories: Rely more on remote repositories (such as Maven Central, private Nexus, or Artifactory repositories) to avoid clashes in the local repository caused by simultaneous accesses.
 * Consider build isolation: If using CI/CD tools, ensure that each build runs in its isolated environment where it manages its dependencies separately.
 
+### Test on race conditions for shared cache volumes
 
-From https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/
+There is another test pipeline `Jenkinsfile-MavenCaching-Volume-Concurrent-Test.groovy` in this repo that runs many parallel builds from within the same pof pointing to the same local cache volume.
+In the test I made I was just able to break some of those builds when one thread delete the shared local repo while another thread tries to read a dependency from it
 
-To prevent race conditions on the shared local cache volume: 
+```
+ERROR] Internal error: java.io.UncheckedIOException: java.io.FileNotFoundException: /tmp/cache/.m2/com/datastax/oss/java-driver-bom/4.10.0/java-driver-bom-4.10.0.pom.lastUpdated (No such file or directory) -> [Help 1]
+org.apache.maven.InternalErrorException: Internal error: java.io.UncheckedIOException: java.io.FileNotFoundException: /tmp/cache/.m2/com/datastax/oss/java-driver-bom/4.10.0/java-driver-bom-4.10.0.pom.lastUpdated (No such file or directory)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:109)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+```
 
-*mavenLocalRepo* : String (optional)
+TODO: I need better test scenarios for concurrency
+
+## From [Pipeline Maven Integration Plugin](https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/(
+
+To prevent race conditions on the shared local cache volume:
+
+See **withMaven**: Provide Maven environment
+
+**mavenLocalRepo** : String (optional)
 Specify a custom local repository path. Shell-like environment variable expansions work with this field, by using the ${VARIABLE} syntax. Normally, Jenkins uses the local Maven repository as determined by Maven, by default ~/.m2/repository and can be overridden by <localRepository> in ~/.m2/settings.xml (see Configuring your Local Repository))
 This normally means that all the jobs that are executed on the same node shares a single Maven repository. The upside of this is that you can save the disk space, the downside is that the repository is not multi process safe and having multiple builds run concurrently can corrupt it. Additionally builds could interfere with each other by sharing incorrect or partially built artifacts. For example, you might end up having builds incorrectly succeed, just because your have all the dependencies in your local repository, despite that fact that none of the repositories in POM might have them.
 
@@ -195,19 +210,6 @@ This means each job could get its own isolated Maven repository just for itself.
 
 When using this option, consider setting up a Maven artifact manager so that you don't have to hit remote Maven repositories too often.
 
-### Test on race conditions for shared cache volumes
-
-There is a test pipeline `Jenkinsfile-MavenCaching-Volume-Concurrent-Test.groovy` in this repo that runs many parallel builds from within the same pof pointing to the same local cache volume.
-In the test I made I was just able to break some of those builds when one thread delete the shared local repo while another thread tries to read a dependency from it
-
-```
-ERROR] Internal error: java.io.UncheckedIOException: java.io.FileNotFoundException: /tmp/cache/.m2/com/datastax/oss/java-driver-bom/4.10.0/java-driver-bom-4.10.0.pom.lastUpdated (No such file or directory) -> [Help 1]
-org.apache.maven.InternalErrorException: Internal error: java.io.UncheckedIOException: java.io.FileNotFoundException: /tmp/cache/.m2/com/datastax/oss/java-driver-bom/4.10.0/java-driver-bom-4.10.0.pom.lastUpdated (No such file or directory)
-    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:109)
-    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
-```
-
-TODO: I need better test scenarios for concurrency  
 
 
 
