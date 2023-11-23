@@ -45,14 +45,14 @@ pipeline {
                         values "build-1", "build-2"
                     }
                     axis {
-                        name 'localrepo'
-                        values "build-A", "build-B", "build-C", "build-D", "build-E", "build-F"
+                        name 'track'
+                        values "A", "B", "C", "D", "E", "F"
                     }
                 }
                 stages {
                     stage('build') {
                         steps {
-                            dir("${build}_${localRepo}") {
+                            dir("${build}-${track}") {
                                 git gitMavenRepo
                                 //This might break the builds in other threads
                                 //sh "rm -Rfv ${pvcMountCacheDir}/*"

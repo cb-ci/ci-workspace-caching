@@ -1,5 +1,3 @@
-
-
 # Maven Caching Options for CI when using PodTemplates
 
 This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  which shows 3 different ways of dealing with the Maven local repository cache
