@@ -7,7 +7,8 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
 * Using AWS S3 bucket cache 
   * https://docs.cloudbees.com/docs/cloudbees-ci/latest/pipelines/cloudbees-cache-step#_writecache_step
 * Using the Maven default local repository 
-  * ~.m2, see https://maven.apache.org/guides/introduction/introduction-to-repositories.html#:~:text=A%20repository%20in%20Maven%20holds,you%20have%20not%20yet%20released
+  * ~/.m2
+  * https://maven.apache.org/guides/introduction/introduction-to-repositories.html#:~:text=A%20repository%20in%20Maven%20holds,you%20have%20not%20yet%20released
 * Using a shared cache volume 
   * Hostpath as used in this test mounts a named directory from the host into the container. Any change made by the container persists until the host is terminated.
     This volume type is risky and can expose the host to attacks from compromised containers; it should only be used in very specific cases.
