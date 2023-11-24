@@ -163,21 +163,37 @@ As of my last knowledge, AWS does not charge specifically for downloading Maven 
 The costs associated with using EKS are primarily related to the underlying infrastructure (such as EC2 instances, EBS volumes, load balancers), EKS control plane costs, data transfer costs (if applicable), and any additional services or resources utilized within the AWS ecosystem.
 Data transfer costs might apply if the CI pod is transferring data outside of the AWS region, across different AWS services, or outside of AWS altogether. However, downloading Maven dependencies from the internet into a CI pod within EKS is not directly charged by AWS.
 
-## Volume share for Local repositories are not thread-safe!
+## Volume share for Local repositories might not be thread-safe!
 
 See 
 
 * https://issues.apache.org/jira/browse/MNG-2802 
 * https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/ 
 
-Maven's local repository, by design, is not intended for simultaneous access by multiple Maven builds or processes. It's primarily meant to serve as a cache for artifacts retrieved from remote repositories to speed up subsequent builds on the same machine.
-The local repository is typically located at <user_home>/.m2/repository by default on most systems. Maven assumes it will be used by a single process at a time, and it does not enforce any built-in mechanisms for concurrent access or locking to prevent conflicts when multiple Maven builds attempt to read from or write to the repository simultaneously.
+Maven's local repository, by design, was not intended for simultaneous access by multiple Maven builds or processes. It's primarily meant to serve as a cache for artifacts retrieved from remote repositories to speed up subsequent builds on the same machine.
+The local repository is typically located at <user_home>/.m2/repository by default on most systems. 
 If multiple Maven builds or processes attempt to access the same local repository concurrently, there's a risk of encountering conflicts, file corruption, or inconsistencies within the repository. This behavior might lead to unexpected build failures, incomplete artifact downloads, or repository corruption due to simultaneous write operations.
 To mitigate potential issues with concurrent access:
 * Avoid concurrent access: Try to prevent simultaneous Maven builds from accessing the same local repository to minimize the risk of conflicts and corruption.
 * Use separate local repositories: If multiple builds need to run concurrently or if you're working in a team environment where concurrent builds are common, consider configuring different local repositories for each build or user.
 * Leverage remote repositories: Rely more on remote repositories (such as Maven Central, private Nexus, or Artifactory repositories) to avoid clashes in the local repository caused by simultaneous accesses.
 * Consider build isolation: If using CI/CD tools, ensure that each build runs in its isolated environment where it manages its dependencies separately.
+
+Basically, there is this concept of Named Locks that was developed to answer the concurrency issue.
+see [maven-resolver-named-locks](https://maven.apache.org/resolver/maven-resolver-named-locks/)
+There are 3 classes of implementation:
+* local locks
+* file locks
+* distributed locks
+
+Local locks only work within the same JVM, which is not applicable to sharing m2 cache between different PODs.
+File locks might work. (concurrently running Maven processes set up to use file-lock implementation can safely share one local repository.)
+File locks might also work on NFS volumes (MAY work if NFSv4+ used with complete setup (with all the necessary services like RPC and portmapper needed to implement NFS advisory file locking)
+
+Finally, “distributed” named locks seem to be the recommended approach in a CI scenario with distributed JVMs referencing the same shared cache.
+(Sharing a local repository between multiple hosts (i.e., on a busy CI server) may be best done with one of distributed named lock, if NFS locking is not working for you.)
+Distrubuted approach uses Redis or Hazelcast to do its magic. It obviously keeps the lock info in Redis/Hazelcast instead of in the filesystem or the JVM.
+
 
 ## Test on race conditions for shared cache volumes
 
