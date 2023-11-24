@@ -47,14 +47,14 @@ For all the maven cache testing scenarios we will need:
 
 # S3 Bucket
 
-For the S3 maven caching we need to set up am S3 bucket 
+For the S3 maven caching, we need to set up an S3 bucket 
 
 * create [S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html)
 * Note: Don't use `.` in the bucket name, it will lead you to SSL cert errors later in the Jenkins AWS setup
 
 # IAM Account
 
-To authenticate from a CI Controller against S3 we need an IAM USer and S3 policies
+To authenticate from a CI Controller against S3 we need an IAM user and S3 policies
 
 * create an [IAM User](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) and attach the following policy 
 
@@ -92,19 +92,19 @@ To authenticate from a CI Controller against S3 we need an IAM USer and S3 polic
 
 # Configure CloudBees workspace caching on the CI Controller
 
-For the S3 maven caching we need to set up the workspace caching on a CI Controller
+For the S3 maven caching, we need to set up the workspace caching on a CI Controller
 
 * Setup [Workspace caching in CloudBees CI](https://www.cloudbees.com/capabilities/continuous-integration/workspace-caching) on the CI Controller
 * Use the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to set up a Jenkins AWS credential for the AWS S3 setup
 
 # Create a shared cache volume
 
-For the shared cache volume test we need an shared volume where Maven can store and share the local repository across builds and pods
+For the shared cache volume test we need a shared volume where Maven can store and share the local repository across builds and pods
 
 > kubectl apply -f create-maven-cache-pvc.yaml 
 
-NOTE: For testing purpose the PV uses a [hostpathvolume](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath)
-In production you should better use EFS! (ReadWriteMany) 
+NOTE: For testing purpose, the PV uses a [hostpathvolume](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath)
+In production, you should better use EFS! (ReadWriteMany) 
 
 Hostpath as used in this test mounts a named directory from the host into the container. Any change made by the container persists until the host is terminated.
 This volume type is risky and can expose the host to attacks from compromised containers; it should only be used in very specific cases.
@@ -160,7 +160,7 @@ resumeBlocked: false
   * https://www.jenkins.io/blog/2023/09/06/artifactory-bandwidth-reduction/
   * https://aws.amazon.com/ec2/pricing/on-demand/
 
-As of my last knowledge, AWS does not charge specifically for downloading Maven dependencies or any other external internet data into a CI pod within Amazon EKS (Elastic Kubernetes Service).
+As of my knowledge, AWS does not charge specifically for downloading Maven dependencies or any other external internet data into a CI pod within Amazon EKS (Elastic Kubernetes Service).
 The costs associated with using EKS are primarily related to the underlying infrastructure (such as EC2 instances, EBS volumes, load balancers), EKS control plane costs, data transfer costs (if applicable), and any additional services or resources utilized within the AWS ecosystem.
 Data transfer costs might apply if the CI pod is transferring data outside of the AWS region, across different AWS services, or outside of AWS altogether. However, downloading Maven dependencies from the internet into a CI pod within EKS is not directly charged by AWS.
 
@@ -173,7 +173,7 @@ See
 
 Maven's local repository, by design, was not intended for simultaneous access by multiple Maven builds or processes. It's primarily meant to serve as a cache for artifacts retrieved from remote repositories to speed up subsequent builds on the same machine (JVM).
 The local repository is typically located at <user_home>/.m2/repository by default on most systems. 
-If multiple Maven builds or processes attempt to access the same local repository concurrently, there's a risk of encountering conflicts, file corruption, or inconsistencies within the repository. This behavior might lead to unexpected build failures, incomplete artifact downloads, or repository corruption due to simultaneous write operations.
+If multiple Maven builds or processes attempt to access the same local repository concurrently, there's a risk of encountering conflicts, file corruption or inconsistencies within the repository. This behavior might lead to unexpected build failures, incomplete artifact downloads, or repository corruption due to simultaneous write operations.
 To mitigate potential issues with concurrent access:
 * Avoid concurrent access: Try to prevent simultaneous Maven builds from accessing the same local repository to minimize the risk of conflicts and corruption.
 * Use separate local repositories: If multiple builds need to run concurrently or if you're working in a team environment where concurrent builds are common, consider configuring different local repositories for each build or user.
@@ -189,13 +189,13 @@ There are 3 classes of implementation:
 * file locks
 * distributed locks
 
-Local locks only work within the same JVM, which is not applicable to sharing m2 cache between different PODs.
+Local locks only work within the same JVM, which is not applicable to sharing the m2 cache between different PODs.
 File locks might work. (concurrently running Maven processes set up to use file-lock implementation can safely share one local repository.)
-File locks might also work on NFS volumes (MAY work if NFSv4+ used with complete setup (with all the necessary services like RPC and portmapper needed to implement NFS advisory file locking)
+File locks might also work on NFS volumes (MAY work if NFSv4+ is used with complete setup (with all the necessary services like RPC and portmapper needed to implement NFS advisory file locking)
 
 Finally, “distributed” named locks seem to be the recommended approach in a CI scenario with distributed JVMs referencing the same shared cache.
-(Sharing a local repository between multiple hosts (i.e., on a busy CI server) may be best done with one of distributed named lock, if NFS locking is not working for you.)
-Distrubuted approach uses Redis or Hazelcast to do its magic. It obviously keeps the lock info in Redis/Hazelcast instead of in the filesystem or the JVM.
+(Sharing a local repository between multiple hosts (i.e., on a busy CI server) may be best done with one of the distributed named locks if NFS locking is not working for you.)
+The distributed approach uses Redis or Hazelcast to do its magic. It obviously keeps the lock info in Redis/Hazelcast instead of in the filesystem or the JVM.
 
 
 ## Test on race conditions for shared cache volumes
@@ -214,17 +214,18 @@ TODO: I need better test scenarios for concurrency
 
 
 See also [Pipeline Maven Integration Plugin](https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/)
-Below is copied from the Pipeline Maven Integration doc
+
+Below is a copy from the Pipeline Maven Integration doc
 
 **withMaven**: Provide Maven environment
 
 **mavenLocalRepo** : String (optional)
 Specify a custom local repository path. Shell-like environment variable expansions work with this field, by using the ${VARIABLE} syntax. Normally, Jenkins uses the local Maven repository as determined by Maven, by default ~/.m2/repository and can be overridden by <localRepository> in ~/.m2/settings.xml (see Configuring your Local Repository))
-This normally means that all the jobs that are executed on the same node shares a single Maven repository. The upside of this is that you can save the disk space, the downside is that the repository is not multi process safe and having multiple builds run concurrently can corrupt it. Additionally builds could interfere with each other by sharing incorrect or partially built artifacts. For example, you might end up having builds incorrectly succeed, just because your have all the dependencies in your local repository, despite that fact that none of the repositories in POM might have them.
+This normally means that all the jobs that are executed on the same node share a single Maven repository. The upside of this is that you can save disk space, the downside is that the repository is not multi-process safe, and having multiple builds run concurrently can corrupt it. Additionally builds could interfere with each other by sharing incorrect or partially built artifacts. For example, you might end up having builds incorrectly succeed, just because you have all the dependencies in your local repository, despite the fact that none of the repositories in POM might have them.
 
 By using this option, Jenkins will tell Maven to use a custom path for the build as the local Maven repository by using -Dmaven.repo.local
-If specified as a relative path then this value well be resolved against the workspace root and not the current working directory.
-ie. if .repository is specified then $WORKSPACE/.repository will be used.
+If specified as a relative path then this value will be resolved against the workspace root and not the current working directory.
+ie. If .repository is specified then $WORKSPACE/.repository will be used.
 
 This means each job could get its own isolated Maven repository just for itself. It fixes the above problems, at the expense of additional disk space consumption.
 
