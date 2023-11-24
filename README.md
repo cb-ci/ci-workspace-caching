@@ -23,8 +23,9 @@ This repo contains `Jenkinsfile-MavenCaching-Test-Parallel.groovy` Pipeline  whi
   * https://www.youtube.com/watch?v=u6LF-T-daS4
   * https://gist.github.com/darinpope/443f1d54b09b914fbeb59e5a12bf6dc1
 * Local Repo Locking:
-  * https://source.coveo.com/2023/02/28/accelerate-mvn-builds-ci/
-  * https://issues.apache.org/jira/browse/MNG-2802
+  * https://maven.apache.org/resolver/maven-resolver-named-locks
+  * https://source.coveo.com/2023/02/28/accelerate-mvn-builds-ci
+  * https://issues.apache.org/jira/browse/MNG-2802  * 
 * Other:
   * https://www.jenkins.io/blog/2023/09/06/artifactory-bandwidth-reduction/
   * https://webmasters.stackexchange.com/questions/110310/avoiding-ssl-certificate-errors-with-amazon-s3-subdomain
@@ -170,7 +171,7 @@ See
 * https://issues.apache.org/jira/browse/MNG-2802 
 * https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/ 
 
-Maven's local repository, by design, was not intended for simultaneous access by multiple Maven builds or processes. It's primarily meant to serve as a cache for artifacts retrieved from remote repositories to speed up subsequent builds on the same machine.
+Maven's local repository, by design, was not intended for simultaneous access by multiple Maven builds or processes. It's primarily meant to serve as a cache for artifacts retrieved from remote repositories to speed up subsequent builds on the same machine (JVM).
 The local repository is typically located at <user_home>/.m2/repository by default on most systems. 
 If multiple Maven builds or processes attempt to access the same local repository concurrently, there's a risk of encountering conflicts, file corruption, or inconsistencies within the repository. This behavior might lead to unexpected build failures, incomplete artifact downloads, or repository corruption due to simultaneous write operations.
 To mitigate potential issues with concurrent access:
@@ -180,7 +181,9 @@ To mitigate potential issues with concurrent access:
 * Consider build isolation: If using CI/CD tools, ensure that each build runs in its isolated environment where it manages its dependencies separately.
 
 Basically, there is this concept of Named Locks that was developed to answer the concurrency issue.
-see [maven-resolver-named-locks](https://maven.apache.org/resolver/maven-resolver-named-locks/)
+
+See [maven-resolver-named-locks](https://maven.apache.org/resolver/maven-resolver-named-locks/)
+
 There are 3 classes of implementation:
 * local locks
 * file locks
@@ -209,11 +212,11 @@ org.apache.maven.InternalErrorException: Internal error: java.io.UncheckedIOExce
 
 TODO: I need better test scenarios for concurrency
 
-## From [Pipeline Maven Integration Plugin](https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/)
 
-To prevent race conditions on the shared local cache volume:
+See also [Pipeline Maven Integration Plugin](https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/)
+Below is copied from the Pipeline Maven Integration doc
 
-See **withMaven**: Provide Maven environment
+**withMaven**: Provide Maven environment
 
 **mavenLocalRepo** : String (optional)
 Specify a custom local repository path. Shell-like environment variable expansions work with this field, by using the ${VARIABLE} syntax. Normally, Jenkins uses the local Maven repository as determined by Maven, by default ~/.m2/repository and can be overridden by <localRepository> in ~/.m2/settings.xml (see Configuring your Local Repository))
