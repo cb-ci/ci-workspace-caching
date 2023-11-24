@@ -22,14 +22,15 @@ spec:
         claimName: maven-repo
     """
 pipeline {
-    agent {
-        kubernetes {
-            yaml k8sYaml
-            defaultContainer 'maven'
-        }
-    }
+    agent none
     stages {
         stage("clean") {
+            agent {
+                kubernetes {
+                    yaml k8sYaml
+                    defaultContainer 'maven'
+                }
+            }
             steps {
                 //Clean the cache so we can see concurrent access when it gets refilled
                 echo "clean before"
@@ -51,6 +52,12 @@ pipeline {
                 }
                 stages {
                     stage('build') {
+                        agent {
+                            kubernetes {
+                                yaml k8sYaml
+                                defaultContainer 'maven'
+                            }
+                        }
                         steps {
                             dir("${build}-${track}") {
                                 git gitMavenRepo
@@ -64,6 +71,12 @@ pipeline {
             }
         }
         stage("show-cache") {
+            agent {
+                kubernetes {
+                    yaml k8sYaml
+                    defaultContainer 'maven'
+                }
+            }
             steps {
                 sh "ls -ltRa ${pvcMountCacheDir}/de"
             }
